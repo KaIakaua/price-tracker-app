@@ -1,89 +1,185 @@
 .store-view {
-    max-width: 400px;
-    margin: 20px auto;
-    border: 2px solid #333;
-    border-radius: 8px;
-    font-family: sans-serif;
+  border: 2px solid #333;
+  border-radius: 8px;
+  font-family: sans-serif;
+}
+
+.store-view-placeholder {
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  padding: 40px;
+  text-align: center;
+  color: #666;
 }
 
 .store-header {
-    display:flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 10px;
-    border-bottom: 2px solid #333;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px;
+  border-bottom: 2px solid #333;
 }
 
 .store-header h2 {
-    margin: 0;
+  margin: 0;
 }
 
-.item-list {
-    padding: 10px;
+.store-header button {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.item-card-wrapper {
+  border-bottom: 2px solid #333;
+}
+.item-card-wrapper:last-child {
+  border-bottom: none;
 }
 
 .item-card {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 15px 10px;
-    border-bottom: 3px solid #333;
+  display: flex;
+  justify-content: space-between;
+  padding: 15px 10px;
 }
 
-.item-card:last-child {
-    border-bottom: none;
+.item-content {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  cursor: pointer;
+  flex-grow: 1; 
+}
+.item-content:hover h3 {
+  text-decoration: underline; 
+}
+.item-content h3 {
+  margin: 0;
+  font-size: 2.5rem;
+  font-weight: bold;
 }
 
-.item-info {
-    display: flex;
-    align-items: center;
-    gap: 15px;
+.item-image-box {
+  border: 2px solid #333;
+  width: 50px;
+  height: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 2rem;
+  flex-shrink: 0; 
 }
 
-.item-image {
-    font-size: 2rem;
+.item-actions-vertical {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between; 
+  align-items: flex-end; 
+  padding-left: 15px;
 }
 
-.item-actions {
-    display: flex;
-    flex-direction: column;
-    align-items: flex-end;
-    gap: 5px;
+.price-display {
+  text-align: right;
+}
+.price-display span {
+  display: block; 
+}
+.sale-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #c00; 
+}
+.original-price {
+  text-decoration: line-through;
+  color: #666;
+}
+.regular-price {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.price-unit {
+  font-size: 0.9rem;
+  color: #666;
 }
 
-.item-actions p {
-    margin: 0;
-    font-weight: bold;
+.add-button {
+  border: 2px solid #333;
+  background-color: white;
+  font-weight: bold;
+  padding: 8px 20px;
+  cursor: pointer;
+  margin-top: 5px;
 }
 
-.item-actions button {
-    padding: 5px 10px;
+.item-details {
+  padding: 15px;
+  background-color: #f9f9f9;
+}
+.item-details p { 
+  margin: 8px 0; 
+}
+.item-details hr { 
+  border: 0; 
+  border-top: 1px solid #ddd; 
+  margin: 10px 0; 
 }
 
-.cart-summary {
-    padding: 15px;
-    margin-top: 10px;
-    border-top: 2px solid #333;
-    background-color: #f8f8f8;
+.item-details .sale-button {
+  border: 2px solid #007bff;
+  background-color: #fff;
+  color: #007bff;
+  padding: 8px 12px;
+  font-weight: bold;
+  cursor: pointer;
 }
 
-.cart-summary h3 {
-    margin-top: 0;
+.sale-form form {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.sale-form label {
+  font-size: 0.9rem;
+  font-weight: bold;
+}
+.sale-form input {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  width: 80px;
+}
+.sale-form button {
+  border: 2px solid #16a34a;
+  background-color: #22c55e;
+  color: white;
 }
 
-.cart-item, .cart-total {
-    display: flex;
-    justify-content: space-between;
-    padding: 8px 0;
+.refresh-container {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.cart-total {
-    font-size: 1.2rem;
-    margin-top: 10px;
+.update-text {
+  font-weight: bold;
+  color: #007bff;
 }
 
-hr {
-    border: none;
-    border-top: 1px solid #ddd;
-    margin: 10px 0;
+.refresh-button {
+  font-size: 1.5rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.refresh-attention {
+  color: #007bff;
+  animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.2); }
+  100% { transform: scale(1); }
 }

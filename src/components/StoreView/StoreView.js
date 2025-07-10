@@ -1,97 +1,122 @@
-import './StoreView.css'; 
 import { useState } from 'react';
+import './StoreView.css';
 
+function StoreView({ store, onAddToCart, onReportSale, onRefreshPrices, onGoToMap, hasPriceUpdates }) {
+    const [expandedItemId, setExpandedItemId] = useState(null);
+    const [saleReportItemId, setSaleReportItemId] = useState(null);
+    const [salePriceInput, setSalePriceInput] = useState('');
 
-const storeData = {
-    name: "Example Supermarket",
-    items: [
-        {
-            id: 1,
-            name: "Milk",
-            price: 2.50,
-            fullName: "Fresh Dairy Milk, 1 Litre",
-            tags: ["dairy", "beverage", "milk"],
-            imagePlaceholder: "🥛"
-        },
-        {
-            id: 2,
-            name: "Bread",
-            price: 1.80,
-            fullName: "Whole Wheat Sliced Bread",
-            tags: ["bakery", "grains", "bread"],
-            imagePlaceholder: "🍞"
-        }
-    ]
-}
+    const handleToggleExpand = (itemId) => {
+        setExpandedItemId(prevId => (prevId === itemId ? null : itemId));
+    };
 
+    const handleOpenSaleForm = (item) => {
+        setExpandedItemId(null);
+        setSaleReportItemId(item.id);
+        setSalePriceInput('');
+    };
+    
+    const handleSaleSubmit = (e, itemId) => {
+        e.preventDefault();
+        const price = parseFloat(salePriceInput);
 
-function StoreView() {
-
-    const [cart, setCart] = useState([]);
-    const [totalPrice, setTotalPrice] = useState(0);
-
-    const handleAddToCart = (itemToAdd) => {
-        const existingItem = cart.find(cartItem => cartItem.id === itemToAdd.id);
-        if (existingItem) {
-            const updatedCart = cart.map(cartItem =>
-                cartItem.id === itemToAdd.id
-                    ? { ...cartItem, quantity: (cartItem.quantity || 1) + 1 }
-                    : cartItem 
-            );
-            setCart(updatedCart);
-        } else {
-            setCart([...cart, { ...itemToAdd, quantity: 1}])
+        if (isNaN(price) || price <= 0) {
+            alert("Please enter a valid sale price.");
+            return;
         }
 
+        onReportSale(itemId, price);
+        setSaleReportItemId(null);
+    };
 
-        setTotalPrice(prevPrice => prevPrice + itemToAdd.price);
+    if (!store) {
+        return (
+            <div className='store-view-placeholder'>
+                <h2>No store selected</h2>
+                <p>Please select a store from the map to see its products.</p>
+            </div>
+        );
     }
 
     return (
         <div className="store-view">
             <div className="store-header">
-                <button>←</button> 
-                <h2>{storeData.name}</h2>
-                <button>↻</button>
+                <button onClick={onGoToMap}>←</button>
+                <h2>{store.name}</h2>
+                <div className='refresh-container'>
+                    {hasPriceUpdates && <span className='update-text'>Price Update!</span>}
+                    <button 
+                        className={`refresh-button ${hasPriceUpdates ? 'refresh-attention' : ''}`}
+                        onClick={onRefreshPrices}
+                    >
+                        ↻
+                    </button>
+                </div>
             </div>
 
             <div className="item-list">
-                {storeData.items.map(item => (
-                    <div className="item-card" key={item.id}>
-                        <div className="item-info">
-                            <span className="item-image">{item.imagePlaceholder}</span>
-                            <h3>{item.name}</h3>
+                {store.items.map(item => (
+                    <div className="item-card-wrapper" key={item.id}>
+                        <div className="item-card">
+                            <div className="item-content" onClick={() => handleToggleExpand(item.id)}>
+                                <h3>{item.name.toUpperCase()}</h3>
+                                <div className="item-image-box">
+                                    <span>{item.imagePlaceholder}</span>
+                                </div>
+                            </div>
+                            <div className="item-actions-vertical">
+                                <div className='price-display'>
+                                    {item.salePrice ? (
+                                        <>
+                                            <span className="sale-price">€{item.salePrice.toFixed(2)}</span>
+                                            <span className="original-price">€{item.price.toFixed(2)}</span>
+                                        </>
+                                    ) : (
+                                        <span className="regular-price">€{item.price.toFixed(2)}</span>
+                                    )} 
+                                    <span className="price-unit"> /{item.unit}</span>
+                                </div>
+                                <button className="add-button" onClick={() => onAddToCart(item)}>ADD</button>
+                            </div>
                         </div>
-                        <div className="item-actions">
-                            <p>€{item.price.toFixed(2)}</p>
-                            <button>Sale?</button>
-                            <button onClick={() => handleAddToCart(item)}>Add</button>
-                        </div>
+
+                        {expandedItemId === item.id && (
+                            <div className="item-details">
+                                <p><strong>Full Name:</strong> {item.fullName}</p>
+                                <hr/>
+                                <p><strong>Regular Price:</strong> €{item.price.toFixed(2)}</p>
+                                {item.salePrice && (
+                                    <>
+                                        <p><strong>Sale Price:</strong> €{item.salePrice.toFixed(2)}</p>
+                                        <p><strong>Discount:</strong> {Math.round(((item.price - item.salePrice) / item.price) * 100)}% off</p>
+                                    </>
+                                )}
+                                <hr/>
+                                <button className='sale-button' onClick={(e) => { e.stopPropagation(); handleOpenSaleForm(item); }}>Report new Sale</button>
+                            </div>
+                        )}
+                        {saleReportItemId === item.id && (
+                            <div className='item-details sale-form'>
+                                <form onSubmit={(e) => handleSaleSubmit(e, item.id)}>
+                                    <label>Enter Sale Price: </label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        placeholder='e.g., 1.99'
+                                        value={salePriceInput}
+                                        onChange={(e) => setSalePriceInput(e.target.value)}
+                                        onClick={(e) => e.stopPropagation()}
+                                        autoFocus
+                                    />
+                                    <button type="submit">Submit Sale</button>
+                                </form>
+                            </div>
+                        )}
                     </div>
                 ))}
             </div>
-            <div className='cart-summary'>
-                <h3>Shopping Cart</h3>
-                {cart.length === 0 ? (
-                    <p>Your cart is empty.</p>
-                ) : (
-                    <div>
-                        {cart.map(cartItem => (
-                            <div className='cart-item' key={cartItem.id}>
-                                <span>{cartItem.name} x {cartItem.quantity}</span>
-                                <span>€ {(cartItem.price * cartItem.quantity).toFixed(2)}</span>
-                            </div>
-                        ))}
-                        <hr />
-                        <div className='cart-total'>
-                            <strong>Total:</strong>
-                            <strong>€{totalPrice.toFixed(2)}</strong>
-                        </div>
-                    </div>
-                )}
-            </div>
         </div>
-    )
+    );
 }
 
 export default StoreView;
